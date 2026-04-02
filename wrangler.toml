@@ -1,0 +1,7 @@
+[build]
+  command = "npx @cloudflare/next-on-pages@1"
+  destination = ".vercel/output/static"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXT_TELEMETRY_DISABLED = "1"
