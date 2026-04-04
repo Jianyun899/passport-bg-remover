@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession, signIn } from 'next-auth/react'
 
-const PAYPAL_CLIENT_ID = 'Ad-hVdtq_IVAiYVJUkQJdYEcHqgZWl-CoWlFerbRYRScKhbeqWvu-HlXqoOnIgvJLL0QNVj7jGHs-cff'
+const PAYPAL_CLIENT_ID = 'AfdU5eTFqpP68vRYQeqzOJlOUvIYLjb8U1nVgvJrllJHCUkNRT_QWkcrjmoA2WjLw2ERRE9jm2vc_Amo'
 
 interface Props {
   planKey: string
@@ -37,7 +37,7 @@ export default function PayPalButton({ planKey, price, onSuccess }: Props) {
 
     const script = document.createElement('script')
     script.id = 'paypal-sdk'
-    script.src = `https://www.sandbox.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD&intent=capture&disable-funding=credit,card`
+    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD&intent=capture&disable-funding=credit,card`
     script.onload = () => setSdkLoaded(true)
     script.onerror = () => setMessage('❌ Failed to load PayPal. Please refresh the page.')
     document.body.appendChild(script)
