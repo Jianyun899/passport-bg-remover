@@ -9,6 +9,7 @@ import SizePresetSelector, { SIZE_PRESETS, type SizePreset } from '@/components/
 import DownloadButton from '@/components/DownloadButton'
 import TrustBadges from '@/components/TrustBadges'
 import HowItWorks from '@/components/HowItWorks'
+import AuthButton from '@/components/AuthButton'
 
 export default function Home() {
   const [originalFile, setOriginalFile] = useState<File | null>(null)
@@ -67,14 +68,17 @@ export default function Home() {
       <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-xl font-bold text-slate-800">📸 Passport Photo BG Remover</h1>
-          <a
-            href="https://github.com/Jianyun899/passport-bg-remover"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
-          >
-            GitHub
-          </a>
+          <div className="flex items-center gap-4">
+            <a
+              href="https://github.com/Jianyun899/passport-bg-remover"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+            >
+              GitHub
+            </a>
+            <AuthButton />
+          </div>
         </div>
       </header>
 
