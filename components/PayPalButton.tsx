@@ -10,6 +10,8 @@ interface Props {
   onSuccess?: (credits: number) => void
 }
 
+const PAYPAL_CLIENT_ID = 'Ad-hVdtq_IVAiYVJUkQJdYEcHqgZWl-CoWlFerbRYRScKhbeqWvu-HlXqoOnIgvJLL0QNVj7jGHs-cff'
+
 export default function PayPalButton({ planKey, price, onSuccess }: Props) {
   const router = useRouter()
   const [message, setMessage] = useState('')
@@ -17,8 +19,10 @@ export default function PayPalButton({ planKey, price, onSuccess }: Props) {
   return (
     <PayPalScriptProvider
       options={{
-        clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
+        clientId: PAYPAL_CLIENT_ID,
         currency: 'USD',
+        intent: 'capture',
+        components: 'buttons',
       }}
     >
       <PayPalButtons
@@ -31,7 +35,10 @@ export default function PayPalButton({ planKey, price, onSuccess }: Props) {
             body: JSON.stringify({ action: 'create', planKey }),
           })
           const data = await res.json()
-          if (!data.id) throw new Error('Failed to create order')
+          if (!data.id) {
+            setMessage('❌ Failed to create order. Please try again.')
+            throw new Error('Failed to create order')
+          }
           return data.id
         }}
         onApprove={async (data) => {
