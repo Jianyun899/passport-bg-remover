@@ -1,10 +1,18 @@
+'use client'
+
 import Link from 'next/link'
+import { useSession, signIn } from 'next-auth/react'
+import dynamic from 'next/dynamic'
+
+// 动态加载 PayPal 按钮（避免 SSR 问题）
+const PayPalButton = dynamic(() => import('@/components/PayPalButton'), { ssr: false })
 
 const plans = [
   {
     key: 'FREE',
     name: 'Free',
     price: '$0',
+    priceNum: 0,
     period: '',
     credits: '3 credits',
     creditNote: 'one-time on signup',
@@ -17,6 +25,7 @@ const plans = [
     key: 'PACK_S',
     name: 'Starter Pack',
     price: '$0.99',
+    priceNum: 0.99,
     period: 'one-time',
     credits: '20 credits',
     creditNote: 'never expire',
@@ -29,6 +38,7 @@ const plans = [
     key: 'PACK_M',
     name: 'Value Pack',
     price: '$1.99',
+    priceNum: 1.99,
     period: 'one-time',
     credits: '60 credits',
     creditNote: 'best value · never expire',
@@ -42,6 +52,7 @@ const plans = [
     key: 'SUB_BASIC',
     name: 'Basic',
     price: '$2.9',
+    priceNum: 2.9,
     period: '/month',
     credits: '50 credits',
     creditNote: 'refreshed monthly',
@@ -54,6 +65,7 @@ const plans = [
     key: 'SUB_PRO',
     name: 'Pro',
     price: '$5.9',
+    priceNum: 5.9,
     period: '/month',
     credits: '200 credits',
     creditNote: 'refreshed monthly',
@@ -96,6 +108,7 @@ const faqs = [
 ]
 
 export default function PricingPage() {
+  const { data: session } = useSession()
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
       {/* Header */}
@@ -153,16 +166,32 @@ export default function PricingPage() {
                 ))}
               </ul>
 
-              <Link
-                href={plan.ctaHref}
-                className={`block text-center py-2.5 rounded-xl font-semibold text-sm transition-colors ${
-                  plan.highlight
-                    ? 'bg-white text-blue-600 hover:bg-blue-50'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                }`}
-              >
-                {plan.cta}
-              </Link>
+              {/* CTA Button */}
+              {plan.key === 'FREE' ? (
+                <Link
+                  href="/"
+                  className={`block text-center py-2.5 rounded-xl font-semibold text-sm transition-colors ${
+                    plan.highlight
+                      ? 'bg-white text-blue-600 hover:bg-blue-50'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  {plan.cta}
+                </Link>
+              ) : !session ? (
+                <button
+                  onClick={() => signIn('google')}
+                  className={`w-full py-2.5 rounded-xl font-semibold text-sm transition-colors ${
+                    plan.highlight
+                      ? 'bg-white text-blue-600 hover:bg-blue-50'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  Sign in to Purchase
+                </button>
+              ) : (
+                <PayPalButton planKey={plan.key} price={plan.priceNum} />
+              )}
             </div>
           ))}
         </div>
