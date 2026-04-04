@@ -35,9 +35,15 @@ export default function Home() {
   }, [session])
 
   const handleImageSelected = async (file: File, previewUrl: string) => {
-    // 未登录拦截
+    // 先设置预览（无论是否登录都显示原图）
+    setOriginalFile(file)
+    setOriginalUrl(previewUrl)
+    setProcessedUrl('')
+    setError('')
+
+    // 未登录拦截：显示预览但不处理
     if (!session) {
-      setError('Please sign in to process images.')
+      setError('Please sign in to remove the background.')
       return
     }
     // 额度不足拦截
@@ -46,10 +52,6 @@ export default function Home() {
       return
     }
 
-    setOriginalFile(file)
-    setOriginalUrl(previewUrl)
-    setProcessedUrl('')
-    setError('')
     setIsProcessing(true)
 
     try {
@@ -214,8 +216,37 @@ export default function Home() {
 
         {/* Main Tool */}
         <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10 mb-12">
-          {!processedUrl ? (
+          {!originalUrl ? (
             <UploadZone onImageSelected={handleImageSelected} isProcessing={isProcessing} />
+          ) : !processedUrl ? (
+            // 已上传原图，等待处理或出错
+            <div className="space-y-6">
+              <div className="relative rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[300px]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={originalUrl} alt="Original" className="max-h-[400px] max-w-full object-contain" />
+                {isProcessing && (
+                  <div className="absolute inset-0 bg-white/70 flex flex-col items-center justify-center gap-3">
+                    <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-slate-600 font-medium">Removing background...</p>
+                  </div>
+                )}
+              </div>
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-center gap-2">
+                  <span>⚠️</span> {error}
+                  {!session && (
+                    <button onClick={() => signIn('google')} className="ml-auto px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700">
+                      Sign in
+                    </button>
+                  )}
+                </div>
+              )}
+              {!isProcessing && (
+                <button onClick={handleReset} className="w-full py-3 text-slate-500 hover:text-slate-700 font-medium transition-colors">
+                  ← Upload Another Photo
+                </button>
+              )}
+            </div>
           ) : (
             <div className="space-y-6">
               <BeforeAfterSlider
@@ -242,19 +273,6 @@ export default function Home() {
               >
                 ← Upload Another Photo
               </button>
-            </div>
-          )}
-
-          {isProcessing && (
-            <div className="text-center py-8">
-              <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-              <p className="mt-4 text-slate-600">Removing background...</p>
-            </div>
-          )}
-
-          {error && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
-              {error}
             </div>
           )}
         </div>
