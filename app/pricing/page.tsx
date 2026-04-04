@@ -178,17 +178,6 @@ export default function PricingPage() {
                 >
                   {plan.cta}
                 </Link>
-              ) : !session ? (
-                <button
-                  onClick={() => signIn('google')}
-                  className={`w-full py-2.5 rounded-xl font-semibold text-sm transition-colors ${
-                    plan.highlight
-                      ? 'bg-white text-blue-600 hover:bg-blue-50'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
-                >
-                  Sign in to Purchase
-                </button>
               ) : (
                 <PayPalButton planKey={plan.key} price={plan.priceNum} />
               )}
