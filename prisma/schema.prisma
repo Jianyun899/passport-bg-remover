@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  plan      Plan     @default(FREE)
+  credits   Int      @default(3)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  records ProcessingRecord[]
+  orders  Order[]
+}
+
+model ProcessingRecord {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bgColor    String   @default("#FFFFFF")
+  sizePreset String   @default("US Passport")
+  createdAt  DateTime @default(now())
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan          Plan
+  credits       Int
+  amount        Float
+  status        OrderStatus @default(PENDING)
+  paypalOrderId String?
+  createdAt     DateTime    @default(now())
+}
+
+enum Plan {
+  FREE
+  PACK_S
+  PACK_M
+  SUB_BASIC
+  SUB_PRO
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
